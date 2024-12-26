@@ -44,31 +44,34 @@ class Scribe(ctk.CTk):
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(expand=True, fill="both")
 
-        # Initialize the Initial_File-Path for Tabs(Notebooks)
-        self.file_path = {}
-
         # Add the First Tab
         self.add_new_tab()
 
-        # Add a plus button to 'Create a New Tab' 
+        # Add a "+" button to 'Create a New Tab' 
         plus_tab = ctk.CTkFrame(self.notebook)
         self.notebook.add(plus_tab, text="  +  ")
 
         # Handles Events
-        self.notebook.bind("<<NotebookTabChanged>>", self.event_handler)
+        self.notebook.bind("<<NotebookTabChanged>>", self.tab_change_event)
       
 
 
-    # Base_Operations---------------------------------------------------------------------------------------------------------------------------------------#
+    # Base_Operations---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+    #Initialize a Dictionary to store File_Path
+    file_path = {}
+
+    # Initialize a Dictionary to store Saved_Content
+    saved_content = {}
 
     # Initialize Text_Area (With respect to each Notebook Frame (Tab))
     def add_text_area(self,frame):
         text_area = ctk.CTkTextbox(frame, wrap="word", font = ('Comic Sans MS', 13, "normal"))
         text_area.pack(expand = True, fill="both", padx = 5, pady = 5)
 
-        # Create a cross button to close the tab
-        close_tab = ctk.CTkButton(frame, text=" X ", font = ('Roboto', 10, "bold"), corner_radius = 2, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#2b2b2b", hover_color = "#2b2b2b", width = 25, height = 25, command=lambda: self.close_tab(frame))
-        close_tab.place(relx=1.0, rely=0.0, anchor="ne", x=-5, y=5)
+        # Create a "X" button to close the tab
+        close_tab = ctk.CTkButton(frame, text=" X ", font = ('Comic Sans MS', 10, "normal"), corner_radius = 3, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#3b3b3b", hover_color = "#404040", width = 20, height = 35, command = lambda: self.close_tab(frame))
+        close_tab.place(relx=1.0, rely=0.0, anchor="ne", x=-20, y=-3)
         return text_area
 
     # Configure and Add New Tabs
@@ -77,8 +80,14 @@ class Scribe(ctk.CTk):
         frame = ctk.CTkFrame(self.notebook)
         text_area = Scribe.add_text_area(self,frame) 
 
+        # Attach the text_area to the frame using a Dynamically Created Attribute: 'text_widget' [Used for detecting 'Unsaved_Changes']
+        frame.text_widget = text_area
+
+        # Initialize the saved content for the new tab
+        self.saved_content[frame] = ""
+
         if len(self.notebook.tabs()) != 0:
-            # Add the new tab before the "+" Tab i.e, Add the new tab at the Index of "+" Tab
+            # Add the new tab before the "+" Tab i.e, Add the new tab at the Index of "+" Tab shifting "+" Tab to the next Index
             plus_tab_index = len(self.notebook.tabs()) - 1
             self.notebook.insert(plus_tab_index, frame, text=f"Scribet - {len(self.notebook.tabs())}")
 
@@ -91,25 +100,33 @@ class Scribe(ctk.CTk):
     
     # Close Existing Tabs
     def close_tab(self,frame):
-        self.notebook.forget(frame)
-
-
-    def event_handler(self,event):
-        # Update the Window_Title to Match the Selected_Tab's Title.
-        current_tab = self.notebook.select()
-        tab_title = self.notebook.tab(current_tab)["text"] # Get the value for 'text' attribute from the corresponding 'current_tab'.
-        self.title(f"{tab_title}")  # Update window Title with 'current_tab' Title.
-
-        #Handles the Event that '+' Tab was selected.
-        current_tab_index = self.notebook.index(self.notebook.select()) # Get 'Index' of current_tab.
-        if current_tab_index == len(self.notebook.tabs()) - 1:  # Last tab is the "+"
-            self.add_new_tab()
+        # Check if changes are made
+        if self.unsaved_changes(frame): 
+            # If 'Unsaved_Changes' are detected ask user 'Whether they wish to Save or Not?'
+            choice = messagebox.askyesno("Unsaved Changes", "Do you want to Save the Changes?")
+            if choice:
+                self.save_scribe()
     
+        if len(self.notebook.tabs()) <= 2:  # Close the application if only Last Tab and "+" Tab are open and "X" button is Clicked 
+            self.quit() 
+        else:   # Remove/Close the 'Current_Tab(i.e frame)' from Notebook
+            self.notebook.forget(frame) 
+
+    # Check for Unsaved_Changes
+    def unsaved_changes(self, frame):
+        current_content = frame.text_widget.get("1.0", "end-1c")
+        exisitng_content = self.saved_content.get(frame, "") 
+        
+        # Compare 'Current_Text_Area Content' with 'Saved_Content' 
+        if current_content != exisitng_content:
+            return True
+        else :
+            return False
 
 
-    # Nav_Sub_Menu----------------------------------------------------------------------------------------------------------------------------------------------#
+    # Nav_Sub_Menu-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-    #File_Menu
+    # File_Menu
     file_menu = None
     
     def toggle_file_menu(self):
@@ -125,10 +142,10 @@ class Scribe(ctk.CTk):
     def display_file_menu(self):
         if not self.file_menu:
             self.file_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
-            new = ctk.CTkButton(self.file_menu, text="New", command = self.new, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
-            open = ctk.CTkButton(self.file_menu, text="Open", command = self.open, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
-            save = ctk.CTkButton(self.file_menu, text="Save", command = self.save, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
-            save_as = ctk.CTkButton(self.file_menu, text="Save As", command = self.save_as, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            new = ctk.CTkButton(self.file_menu, text="New", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
+            open = ctk.CTkButton(self.file_menu, text="Open", command = self.open_in_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
+            save = ctk.CTkButton(self.file_menu, text="Save", command = self.save_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
+            save_as = ctk.CTkButton(self.file_menu, text="Save As", command = self.save_as_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
             separator = ctk.CTkFrame(self.file_menu, fg_color="#ffc300", height = 2, width = 90)
             exit = ctk.CTkButton(self.file_menu, text="Exit", command = self.quit, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
 
@@ -141,8 +158,7 @@ class Scribe(ctk.CTk):
 
         self.file_menu.place(x=5, y=25) #Show File_Menu
 
-
-    #Edit_Menu
+    # Edit_Menu
     edit_menu = None
 
     def toggle_edit_menu(self):
@@ -168,8 +184,7 @@ class Scribe(ctk.CTk):
 
         self.edit_menu.place(x=55, y=25) #Show Edit_Menu
 
-
-    #View_Menu
+    # View_Menu
     view_menu = None
     
     def toggle_view_menu(self):
@@ -197,7 +212,7 @@ class Scribe(ctk.CTk):
 
 
 
-    # Sub_Menu_Operations---------------------------------------------------------------------------------------------------------------------------------------#
+    # Sub_Menu_Operations------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     
     # Get 'current_tab' Name
     def current_tab_name(self):
@@ -209,12 +224,12 @@ class Scribe(ctk.CTk):
         return current_tab.winfo_children()[0] # Gets Content from a Tab's 'ctk.CTkTextbox' widget. 'winfo_children[0]' means that the 'CTkTextbox' is the First Child in a Tab's Frame.
 
     # New
-    def new(self):  
+    def new_scribe(self):  
         self.add_new_tab()
         self.title("Scribe")
 
     # Open
-    def open(self):
+    def open_in_scribe(self):
         file_path = filedialog.askopenfilename()
         if file_path:
             with open(file_path, "r") as file:
@@ -222,55 +237,81 @@ class Scribe(ctk.CTk):
             tab_id, text_area = self.add_new_tab()
             text_area.insert("1.0", content)
 
-            #Save File_Path 
+            # Save File_Path 
             current_tab = self.current_tab_name()
-            self.file_path[current_tab] = file_path
+            self.file_path[current_tab] = file_path # Set the value of 'file_path' attribute for 'current_tab'
 
-            #Set Window_Title and Tab_Title to Selected_File_Name
+            # Save the File's Content in the 'Saved_Content' Dictionary
+            self.saved_content[current_tab] = content
+
+            # Set Window_Title and Tab_Title to Selected_File_Name
             file_name = os.path.basename(file_path)
-            self.notebook.tab(current_tab, text = file_name)
-            self.title(file_name)
+            self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
+            self.title(file_name) # Update window Title with 'file_name'.
     
     # Save
-    def save(self):
+    def save_scribe(self):
         current_tab = self.current_tab_name()
-        path = self.file_path.get(current_tab)  # Get the stored file path for the current tab
+        path = self.file_path.get(current_tab)  # Get the value of 'file_path' attribute for 'current_tab'
 
-         # If a path exists, save the content to that file
+        # If a path exists, 'Save' the Content to that File
         if path:
             current_tab_text = self.current_tab_text()  # Get the text area content
             with open(path, "w") as file:
-                file.write(current_tab_text.get(1.0, "end").strip())  # Save content to the file
+                content = file.write(current_tab_text.get(1.0, "end-1c").strip())  # Save content to the file
 
-            # Update the tab and window title with the saved file name
+            # Save the File's Content in the 'Saved_Content' Dictionary
+            self.saved_content[current_tab] = content
+
+            # Save File_Path 
             self.file_path[current_tab] = path
+
+            # Set Window_Title and Tab_Title to Selected_File_Name
             file_name = os.path.basename(path)
-            self.notebook.tab(current_tab, text=file_name)
-            self.title(file_name)
+            self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
+            self.title(file_name) # Update window Title with 'file_name'.
         else:
             # If no path exists, prompt for 'Save As'
-            self.save_as()
-
+            self.save_as_scribe()
     
-    #Save As
-    def save_as(self):
+    # Save As
+    def save_as_scribe(self):
         current_tab = self.current_tab_name()
         current_tab_text = self.current_tab_text()
-        file_path = filedialog.asksaveasfilename(defaultextension = ".txt",filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")],
-)
+        file_path = filedialog.asksaveasfilename(defaultextension = ".txt",filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
+
         if file_path:
             with open(file_path, "w") as file:
-                file.write(current_tab_text.get(1.0, "end").strip())
+                content = file.write(current_tab_text.get(1.0, "end-1c").strip())
 
-            #Save File_Path
-            self.file_path[current_tab] = file_path
+            # Save the File's Content in the 'Saved_Content' Dictionary
+            self.saved_content[current_tab] = content
 
-            #Update Window_Title and Tab_Title to Selected_File_Name
+            # Save File_Path
+            self.file_path[current_tab] = file_path # Set the value of 'file_path' attribute for 'current_tab'
+
+            # Update Window_Title and Tab_Title to Selected_File_Name
             file_name = os.path.basename(file_path)
-            self.notebook.tab(current_tab, text = file_name)
-            self.title(file_name)
+            self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
+            self.title(file_name) # Update window Title with 'file_name'.
 
-           
+
+
+    # Event_Handlers---------------------------------------------------------------------------------------------------------------------------------------#
+    
+    def tab_change_event(self,event):
+        # Update the Window_Title to Match the Selected_Tab's Title.
+        current_tab = self.notebook.select()
+        tab_title = self.notebook.tab(current_tab)["text"] # Get the value for 'text' attribute from the corresponding 'current_tab'.
+        self.title(tab_title)  # Update window Title with 'current_tab' Title.
+
+        # Handles the Event that '+' Tab was selected.
+        current_tab_index = self.notebook.index(self.notebook.select()) # Get 'Index' of current_tab.
+        if current_tab_index == len(self.notebook.tabs()) - 1:  # Last tab is the "+"
+            self.add_new_tab()
+
+
+
 app = Scribe()
 app.mainloop()
 

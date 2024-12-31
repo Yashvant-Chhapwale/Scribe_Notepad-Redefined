@@ -89,12 +89,13 @@ class Scribe(ctk.CTk):
         if len(self.notebook.tabs()) != 0:
             # Add the new tab before the "+" Tab i.e, Add the new tab at the Index of "+" Tab shifting "+" Tab to the next Index
             plus_tab_index = len(self.notebook.tabs()) - 1
-            self.notebook.insert(plus_tab_index, frame, text=f"Scribet - {len(self.notebook.tabs())}")
+            self.notebook.insert(plus_tab_index, frame, text=f"New Scribet")
 
             # Automatically Switch to the Newly_Created_Tab
             self.notebook.select(plus_tab_index)
         else:
-            self.notebook.add(frame, text = f"Scribet - {len(self.notebook.tabs())  + 1}")
+            # Helps to Generate the "First Tab" when: "len(self.notebook.tabs()) = 0"
+            self.notebook.add(frame, text = f"New Scribet")
 
         return tab_id,text_area
     
@@ -107,10 +108,14 @@ class Scribe(ctk.CTk):
             if choice:
                 self.save_scribe()
     
-        if len(self.notebook.tabs()) <= 2:  # Close the application if only Last Tab and "+" Tab are open and "X" button is Clicked 
+        if len(self.notebook.tabs()) == 2: # Close the application if only Last Tab and "+" Tab are open and "X" button is Clicked 
             self.quit() 
-        else:   # Remove/Close the 'Current_Tab(i.e frame)' from Notebook
+        else: # Remove/Close the 'Current_Tab(i.e frame)' from Notebook
+            current_tab_index = self.notebook.index(frame) # Stores the Current_Tab's_Index
             self.notebook.forget(frame) 
+            if current_tab_index != 0:
+                self.notebook.select(self.notebook.tabs()[current_tab_index - 1]) # Selects the Tab at the [Current_Tab's_Index - 1] if [Current_Tab's_Index != 0], after removing the Current_Tab
+
 
     # Check for Unsaved_Changes
     def unsaved_changes(self, frame):

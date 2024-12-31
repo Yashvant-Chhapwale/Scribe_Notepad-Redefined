@@ -16,7 +16,7 @@ class Scribe(ctk.CTk):
         self.iconbitmap('./images/scribe_logo.ico')
 
         # Display-Window_Settings
-        self.geometry("800x600")
+        self.geometry("600x350")
         self.minsize(250,120)
 
         # Initialize Word_Wrap State
@@ -35,10 +35,10 @@ class Scribe(ctk.CTk):
 
         # Configure 'Style' for Notebook
         self.style = ttk.Style()
-        self.style.theme_use("default")  # Use a base theme
-        self.style.configure("TNotebook",background = "#2b2b2b", foreground = "#000000", borderwidth = 0, padding = [0,5])
-        self.style.configure("TNotebook.Tab", background = "#1d1e1e", foreground = "#ffc300", padding = [10,6], font = ("Comic Sans MS", 10, "italic"))
-        self.style.map("TNotebook.Tab",background = [("selected", "#2b2b2b")], foreground = [("selected", "#ffd60a")], borderwidth="0")
+        self.style.theme_use("default")  # Select the Base_Theme
+        self.style.configure("TNotebook",background = "#2e2e2e", foreground = "#000000", borderwidth = 0, padding = [0,6])
+        self.style.configure("TNotebook.Tab", background = "#242424", foreground = "#ffd60a", padding = [10,6], font = ("Comic Sans MS", 10, "italic"), corner_radius = 0)
+        self.style.map("TNotebook.Tab",background = [("selected", "#1d1d1d")], foreground = [("selected", "#ffc300")], borderwidth="0", corner_radius = [("selected", "5")])
 
         # Initialize a Notebook for creating Tabbed-Interface
         self.notebook = ttk.Notebook(self)
@@ -67,7 +67,7 @@ class Scribe(ctk.CTk):
     # Initialize Text_Area (With respect to each Notebook Frame (Tab))
     def add_text_area(self,frame):
         text_area = ctk.CTkTextbox(frame, wrap="word", font = ('Comic Sans MS', 13, "normal"))
-        text_area.pack(expand = True, fill="both", padx = 5, pady = 5)
+        text_area.pack(expand = True, fill="both", pady=1)
 
         # Create a "X" button to close the tab
         close_tab = ctk.CTkButton(frame, text=" X ", font = ('Comic Sans MS', 10, "normal"), corner_radius = 3, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#3b3b3b", hover_color = "#404040", width = 20, height = 35, command = lambda: self.close_tab(frame))
@@ -151,7 +151,8 @@ class Scribe(ctk.CTk):
             open = ctk.CTkButton(self.file_menu, text="Open", command = self.open_in_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
             save = ctk.CTkButton(self.file_menu, text="Save", command = self.save_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
             save_as = ctk.CTkButton(self.file_menu, text="Save As", command = self.save_as_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-            separator = ctk.CTkFrame(self.file_menu, fg_color="#ffc300", height = 2, width = 90)
+            separator = self.separator(self.file_menu)
+            close_tab = ctk.CTkButton(self.file_menu, text="Close Tab", command = lambda: self.close_tab(self.notebook.select()), fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
             exit = ctk.CTkButton(self.file_menu, text="Exit", command = self.quit, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
 
             new.pack(pady=0, padx=5)
@@ -159,6 +160,7 @@ class Scribe(ctk.CTk):
             save.pack(pady=0, padx=5)
             save_as.pack(pady=0, padx=5)          
             separator.pack(pady=0, padx=5)
+            close_tab.pack(pady=0, padx=5)
             exit.pack(pady=0, padx=5)
 
         self.file_menu.place(x=5, y=25) #Show File_Menu
@@ -179,13 +181,33 @@ class Scribe(ctk.CTk):
     def display_edit_menu(self):
         if not self.edit_menu:
             self.edit_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
-            new = ctk.CTkButton(self.edit_menu, text="New", command = self.new, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-            open = ctk.CTkButton(self.edit_menu, text="Open", command = self.open, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-            save = ctk.CTkButton(self.edit_menu, text="Save", command = self.save, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            undo = ctk.CTkButton(self.edit_menu, text="Undo", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            redo = ctk.CTkButton(self.edit_menu, text="Redo", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            separator_1 = self.separator(self.edit_menu)
+            cut = ctk.CTkButton(self.edit_menu, text="Cut", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            copy = ctk.CTkButton(self.edit_menu, text="Copy", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            paste = ctk.CTkButton(self.edit_menu, text="Paste", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            separator_2 = self.separator(self.edit_menu)
+            find = ctk.CTkButton(self.edit_menu, text="Find", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            find_previous = ctk.CTkButton(self.edit_menu, text="Find Previous", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            find_next = ctk.CTkButton(self.edit_menu, text="Find Next", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            separator_3 = self.separator(self.edit_menu)
+            font = ctk.CTkButton(self.edit_menu, text="Font", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+          
 
-            new.pack(pady=0, padx=5)
-            open.pack(pady=0, padx=5)
-            save.pack(pady=0, padx=5)
+            undo.pack(pady=0, padx=5)
+            redo.pack(pady=0, padx=5)
+            separator_1.pack(pady=0, padx=5)
+            cut.pack(pady=0, padx=5)
+            redo.pack(pady=0, padx=5)
+            copy.pack(pady=0, padx=5)
+            paste.pack(pady=0, padx=5)
+            separator_2.pack(pady=0, padx=5)
+            find.pack(pady=0, padx=5)
+            find_previous.pack(pady=0, padx=5)
+            find_next.pack(pady=0, padx=5)
+            separator_3.pack(pady=0, padx=5)
+            font.pack(pady=0, padx=5)
 
         self.edit_menu.place(x=55, y=25) #Show Edit_Menu
 
@@ -205,20 +227,27 @@ class Scribe(ctk.CTk):
     def display_view_menu(self):
         if not self.view_menu:
             self.view_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
-            new = ctk.CTkButton(self.view_menu, text="New", command = self.new, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-            open = ctk.CTkButton(self.view_menu, text="Open", command = self.open, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-            save = ctk.CTkButton(self.view_menu, text="Save", command = self.save, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            zoom = ctk.CTkButton(self.view_menu, text="Zoom", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            separator = self.separator(self.view_menu)
+            status_bar = ctk.CTkButton(self.view_menu, text="Status Bar", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+            word_wrap = ctk.CTkButton(self.view_menu, text="Word Wrap", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
 
-            new.pack(pady=0, padx=5)
-            open.pack(pady=0, padx=5)
-            save.pack(pady=0, padx=5)
+            zoom.pack(pady=0, padx=5)
+            separator.pack(pady=0, padx=5)
+            status_bar.pack(pady=0, padx=5)
+            word_wrap.pack(pady=0, padx=5)
 
-        self.view_menu.place(x = 95, y = 0) #Show View_Menu
+        self.view_menu.place(x = 95, y = 25) #Show View_Menu
 
 
 
     # Sub_Menu_Operations------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     
+    # Separators
+    def separator(self,x): 
+        separator = ctk.CTkFrame(x, fg_color="#ffc300", height = 2, width = 90)
+        return separator
+
     # Get 'current_tab' Name
     def current_tab_name(self):
         return self.notebook.nametowidget(self.notebook.select()) # Returns the 'Internal_Tkinter_Widget_Name' for the 'current_tab' Frame. 

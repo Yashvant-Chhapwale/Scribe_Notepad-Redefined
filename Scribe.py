@@ -21,13 +21,18 @@ class Scribe(ctk.CTk):
         self.geometry("600x350")
         self.minsize(250,120)
 
+        # Initialize Font_Family and Font_size
+        self.font_family = "Comic Sans MS"
+        self.font_size = 12
+        self.font_weight = "normal"
+
         # Initialize a Navbar
         self.navbar = ctk.CTkFrame(self, bg_color="#1d1e1e", fg_color = "#1d1e1e")
         self.navbar.pack(side="top", fill="x")
 
-        nav_file = ctk.CTkButton(self.navbar, text="File", width=45, height=20, corner_radius=0, command=self.toggle_file_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
-        nav_edit = ctk.CTkButton(self.navbar, text="Edit", width=45, height=20, corner_radius=0, command=self.toggle_edit_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
-        nav_view = ctk.CTkButton(self.navbar, text="View", width=45, height=20, corner_radius=0, command=self.toggle_view_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
+        nav_file = ctk.CTkButton(self.navbar, text="File", width=45, height=20, corner_radius=0, command=self.toggle_file_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b", text_color = "#ffffff")
+        nav_edit = ctk.CTkButton(self.navbar, text="Edit", width=45, height=20, corner_radius=0, command=self.toggle_edit_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b", text_color = "#ffffff")
+        nav_view = ctk.CTkButton(self.navbar, text="View", width=45, height=20, corner_radius=0, command=self.toggle_view_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b", text_color = "#ffffff")
         nav_file.pack(side = "left", padx = 1)
         nav_edit.pack(side = "left", padx = 2)
         nav_view.pack(side = "left", padx = 2)
@@ -37,7 +42,7 @@ class Scribe(ctk.CTk):
         self.style.theme_use("default")  # Select the Base_Theme
         self.style.configure("TNotebook",background = "#2e2e2e", foreground = "#000000", borderwidth = 0, padding = [0,1])
         self.style.configure("TNotebook.Tab", background = "#242424", foreground = "#ffc300", padding = [10,6], font = ("Comic Sans MS", 10, "normal"), corner_radius = 0)
-        self.style.map("TNotebook.Tab",background = [("selected", "#1d1d1d")], foreground = [("selected", "#ffd60a")], borderwidth="0", corner_radius = [("selected", "5")])
+        self.style.map("TNotebook.Tab",background = [("selected", "#1d1d1d")], foreground = [("selected", "#ffd60a")], borderwidth="0")
 
         # Initialize a Notebook for creating Tabbed-Interface
         self.notebook = ttk.Notebook(self)
@@ -69,8 +74,8 @@ class Scribe(ctk.CTk):
     # Initialize Text_Area (With respect to each Notebook Frame (Tab))
     def add_text_area(self,frame):
         try:
-            text_area = ctk.CTkTextbox(frame, wrap="word", font = ('Comic Sans MS', 12, "normal"), corner_radius=2, undo = True)
-            text_area.pack(expand = True, fill="both", pady=0)
+            text_area = ctk.CTkTextbox(frame, wrap="word", font = ('Comic Sans MS', 12, "normal"), corner_radius=2, padx=6, pady=5, undo = True)
+            text_area.pack(expand = True, fill="both")
 
             # Create a "X" button to close the tab
             close_tab = ctk.CTkButton(frame, text=" X ", font = ('Comic Sans MS', 9, "normal"), corner_radius = 3, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#3b3b3b", hover_color = "#404040", width = 10, height = 35, command = lambda: self.close_tab(frame))
@@ -140,7 +145,7 @@ class Scribe(ctk.CTk):
             separator_2 = self.separator_v(self.status_bar)
             self.word_wrap_status = ctk.CTkLabel(self.status_bar, text="Word Wrap: On", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
             separator_3 = self.separator_v(self.status_bar)
-            self.font_status = ctk.CTkLabel(self.status_bar, text="Font: Comic Sans MS", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
+            self.font_status = ctk.CTkLabel(self.status_bar, text=f"Font: {self.font_family}", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
             separator_4 = self.separator_v(self.status_bar)
 
             self.op_status.grid(row=0, column=0, sticky="w")
@@ -233,7 +238,7 @@ class Scribe(ctk.CTk):
     def display_file_menu(self):
         try:
             if not self.file_menu:
-                self.file_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
+                self.file_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", bg_color = "#1c1c1c", corner_radius = 6)
                 new = ctk.CTkButton(self.file_menu, text="New", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 open = ctk.CTkButton(self.file_menu, text="Open", command = self.open_in_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 save = ctk.CTkButton(self.file_menu, text="Save", command = self.save_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
@@ -242,13 +247,13 @@ class Scribe(ctk.CTk):
                 close_tab = ctk.CTkButton(self.file_menu, text="Close Tab", command = lambda: self.close_tab(self.current_tab_name()), fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 exit = ctk.CTkButton(self.file_menu, text="Exit", command = self.quit, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
 
-                new.pack(pady=0, padx=5)
-                open.pack(pady=0, padx=5)
-                save.pack(pady=0, padx=5)
-                save_as.pack(pady=0, padx=5)          
-                separator.pack(pady=0, padx=5)
-                close_tab.pack(pady=0, padx=5)
-                exit.pack(pady=0, padx=5)
+                new.pack(pady=0, padx=2)
+                open.pack(pady=0, padx=2)
+                save.pack(pady=0, padx=2)
+                save_as.pack(pady=0, padx=2)          
+                separator.pack(pady=0, padx=2)
+                close_tab.pack(pady=0, padx=2)
+                exit.pack(pady=0, padx=2)
 
             self.file_menu.place(x=2, y=22) #Show File_Menu
         except AttributeError as e:
@@ -283,7 +288,7 @@ class Scribe(ctk.CTk):
     def display_edit_menu(self):
         try:
             if not self.edit_menu:
-                self.edit_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
+                self.edit_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c",  bg_color = "#1c1c1c", corner_radius = 6)
                 undo = ctk.CTkButton(self.edit_menu, text="Undo", command = self.undo_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 redo = ctk.CTkButton(self.edit_menu, text="Redo", command = self.redo_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 separator_1 = self.separator_h(self.edit_menu)
@@ -298,19 +303,19 @@ class Scribe(ctk.CTk):
                 font = ctk.CTkButton(self.edit_menu, text="Font", command = self.font_menu_slider, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
           
 
-                undo.pack(pady=0, padx=5)
-                redo.pack(pady=0, padx=5)
-                separator_1.pack(pady=0, padx=5)
-                cut.pack(pady=0, padx=5)
-                redo.pack(pady=0, padx=5)
-                copy.pack(pady=0, padx=5)
-                paste.pack(pady=0, padx=5)
-                separator_2.pack(pady=0, padx=5)
-                find.pack(pady=0, padx=5)
-                find_previous.pack(pady=0, padx=5)
-                find_next.pack(pady=0, padx=5)
-                separator_3.pack(pady=0, padx=5)
-                font.pack(pady=0, padx=5)
+                undo.pack(pady=0, padx=2)
+                redo.pack(pady=0, padx=2)
+                separator_1.pack(pady=0, padx=2)
+                cut.pack(pady=0, padx=2)
+                redo.pack(pady=0, padx=2)
+                copy.pack(pady=0, padx=2)
+                paste.pack(pady=0, padx=2)
+                separator_2.pack(pady=0, padx=2)
+                find.pack(pady=0, padx=2)
+                find_previous.pack(pady=0, padx=2)
+                find_next.pack(pady=0, padx=2)
+                separator_3.pack(pady=0, padx=2)
+                font.pack(pady=0, padx=2)
 
             self.edit_menu.place(x=55, y=22) #Show Edit_Menu
         except AttributeError as e:
@@ -347,18 +352,18 @@ class Scribe(ctk.CTk):
     def display_view_menu(self):
         try:
             if not self.view_menu:
-                self.view_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
+                self.view_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", bg_color = "#1c1c1c", corner_radius = 6)
                 zoom = ctk.CTkButton(self.view_menu, text="Zoom           ❯", command = self.toggle_zoom_menu, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 separator = self.separator_h(self.view_menu)
                 status_bar = ctk.CTkButton(self.view_menu, text = self.toggle_word_wrap_text(), command = self.toggle_word_wrap, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 word_wrap = ctk.CTkButton(self.view_menu, text = self.toggle_status_bar_text(), command = self.toggle_status_bar, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
 
-                zoom.pack(pady=0, padx=5)
-                separator.pack(pady=0, padx=5)
-                status_bar.pack(pady=0, padx=5)
-                word_wrap.pack(pady=0, padx=5)
+                zoom.pack(pady=0, padx=2)
+                separator.pack(pady=0, padx=2)
+                status_bar.pack(pady=0, padx=2)
+                word_wrap.pack(pady=0, padx=2)
 
-            self.view_menu.place(x = 95, y = 22) #Show View_Menu
+            self.view_menu.place(x = 105, y = 22) #Show View_Menu
         except AttributeError as e:
             self.op_status.configure(text=": /")
             print(f"{e}")
@@ -403,6 +408,23 @@ class Scribe(ctk.CTk):
         except Exception as e:
             self.op_status.configure(text=": /") 
             print(f"{e}")
+    
+    # Update Font Attributes
+    def update_font(self):
+        try:
+            # Get "Current_Tab" Content
+            text_area = self.current_tab_text()
+        
+            # Configure "Text_Area" Attributes for "Font_Style"
+            text_area.configure(font=(self.font_family, self.font_size, self.font_weight))
+        except AttributeError as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+
 
     #---------------------------------------------------------------------- File_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     # New
@@ -436,6 +458,9 @@ class Scribe(ctk.CTk):
                     file_name = os.path.basename(file_path)
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
+
+                    if hasattr(self, 'op_status'):
+                        self.op_status.configure(text=f"File Ready . . .")
                 except IOError as e:
                     self.op_status.configure(text=": / File Not Readable")
                     print(f"{e}")
@@ -469,6 +494,9 @@ class Scribe(ctk.CTk):
                     file_name = os.path.basename(path)
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
+
+                    if hasattr(self, 'op_status'):
+                        self.op_status.configure(text=f"File Saved . . .")
                 except IOError as e:
                     self.op_status.configure(text=": / File Not Editable")
                     print(f"{e}")
@@ -504,6 +532,9 @@ class Scribe(ctk.CTk):
                     file_name = os.path.basename(file_path)
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
+
+                    if hasattr(self, 'op_status'):
+                        self.op_status.configure(text=f"File Saved as : : {file_name}")
                 except IOError as e:
                     self.op_status.configure(text=": / File Not Editable")
                     print(f"{e}")
@@ -514,6 +545,8 @@ class Scribe(ctk.CTk):
             self.op_status.configure(text=": /")
             print(f"{e}")
 
+
+
     #---------------------------------------------------------------------- Edit_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     # Undo
     def undo_scribe(self):
@@ -522,6 +555,8 @@ class Scribe(ctk.CTk):
             text = getattr(current_tab, 'text_widget', None)
             if text:
                 text.edit_undo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Widget Method to Undo Changes
+                if hasattr(self, 'op_status'):
+                        self.op_status.configure(text=f"Scribe")
         except tkinter.TclError as e:
             self.op_status.configure(text=": / No Changes to Undo") 
             print(f"{e}")      
@@ -537,6 +572,8 @@ class Scribe(ctk.CTk):
             text = getattr(current_tab, 'text_widget', None)
             if text:
                 text.edit_redo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Method to Redo Changes
+                if hasattr(self, 'op_status'):
+                        self.op_status.configure(text=f"Scribe")
         except tkinter.TclError as e:
             self.op_status.configure(text=": / No Changes to Redo")
             print(f"{e}")
@@ -585,14 +622,13 @@ class Scribe(ctk.CTk):
             current_tab.text_widget.insert("insert", clipboard_text)
         except Exception as e:
             messagebox.showwarning("Clipboard Error!", "Empty Clipboard. Nothing to Paste.")
-    
-    # Set Default Font_Family
-    font_family = "Comic Sans MS"
 
     # Font_Menu
     def font_menu_slider(self):
         if hasattr(self,"op_status"):
             self.op_status.configure(text="File Saved . . . ")
+
+
 
     #---------------------------------------------------------------------- View_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     # Zoom Menu
@@ -618,27 +654,24 @@ class Scribe(ctk.CTk):
     def display_zoom_menu(self):
         try:
             if not self.zoom_menu:
-                self.zoom_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", corner_radius = 6)
+                self.zoom_menu = ctk.CTkFrame(self, fg_color = "#1c1c1c", bg_color = "#1c1c1c", corner_radius = 6)
                 zoom_in = ctk.CTkButton(self.zoom_menu, text="Zoom In", command = self.zoom_in, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 zoom_out = ctk.CTkButton(self.zoom_menu, text="Zoom Out", command = self.zoom_out, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
                 separator = self.separator_h(self.zoom_menu)
                 reset = ctk.CTkButton(self.zoom_menu, text="Reset", command = self.zoom_reset, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, height = 25, anchor="w")
 
-                zoom_in.pack(pady=0, padx=5)
-                zoom_out.pack(pady=0, padx=5)
-                separator.pack(pady=0, padx=5)
-                reset.pack(pady=0, padx=5)
+                zoom_in.pack(pady=0, padx=2)
+                zoom_out.pack(pady=0, padx=2)
+                separator.pack(pady=0, padx=2)
+                reset.pack(pady=0, padx=2)
 
-            self.zoom_menu.place(x=205, y=22) #Show File_Menu
+            self.zoom_menu.place(x=210, y=22) #Show File_Menu
         except AttributeError as e:
             self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
             self.op_status.configure(text=": /")
             print(f"{e}")
-
-    # Set Default Font_Size
-    font_size = 12
 
     def zoom_in(self):
         try:
@@ -677,21 +710,6 @@ class Scribe(ctk.CTk):
 
             if hasattr(self, 'zoom_status'):
                     self.zoom_status.configure(text=f"Zoom: 100%")
-        except AttributeError as e:
-            self.op_status.configure(text=": /")
-            print(f"{e}")
-        except Exception as e:
-            self.op_status.configure(text=": /")
-            print(f"{e}")
-
-    # Update Font
-    def update_font(self):
-        try:
-            # Get "Current_Tab" Content
-            text_area = self.current_tab_text()
-        
-            # Configure "Text_Area" Attributes for "Font_Style"
-            text_area.configure(font=(self.font_family, self.font_size))
         except AttributeError as e:
             self.op_status.configure(text=": /")
             print(f"{e}")
@@ -768,8 +786,9 @@ class Scribe(ctk.CTk):
             self.op_status.configure(text=": /")
             print(f"{e}")
 
+
+
     # Event_Handlers------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-    
     def tab_change_event(self,event):
         try:
             # Update the Window_Title to Match the Selected_Tab's Title.
@@ -806,6 +825,8 @@ class Scribe(ctk.CTk):
                 self.view_menu.place_forget()
                 if self.zoom_menu and self.zoom_menu.winfo_ismapped():
                     self.zoom_menu.place_forget() 
+            if hasattr(self, 'op_status'):
+                self.op_status.configure(text="Scribe")
         except Exception as e:
             self.op_status.configure(text=": /")
             print(f"{e}")

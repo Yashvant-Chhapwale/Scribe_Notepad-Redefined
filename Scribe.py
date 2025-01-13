@@ -2,6 +2,7 @@ import os
 import tkinter
 import customtkinter as ctk
 from tkinter import filedialog, ttk, messagebox
+import tkinter.font as tkFont
 import uuid # Used for creating Unique_IDs
 
 # Customize theme for the Custom-Tkinter App
@@ -27,9 +28,9 @@ class Scribe(ctk.CTk):
         nav_file = ctk.CTkButton(self.navbar, text="File", width=45, height=20, corner_radius=0, command=self.toggle_file_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
         nav_edit = ctk.CTkButton(self.navbar, text="Edit", width=45, height=20, corner_radius=0, command=self.toggle_edit_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
         nav_view = ctk.CTkButton(self.navbar, text="View", width=45, height=20, corner_radius=0, command=self.toggle_view_menu, fg_color = "#1d1e1e", bg_color = "#1d1e1e", hover_color="#3b3b3b")
-        nav_file.pack(side = "left", padx = 3)
-        nav_edit.pack(side = "left", padx = 3)
-        nav_view.pack(side = "left", padx = 3)
+        nav_file.pack(side = "left", padx = 1)
+        nav_edit.pack(side = "left", padx = 2)
+        nav_view.pack(side = "left", padx = 2)
 
         # Configure 'Style' for Notebook
         self.style = ttk.Style()
@@ -82,10 +83,10 @@ class Scribe(ctk.CTk):
 
             return text_area
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")      
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     # Configure and Add New Tabs
@@ -114,13 +115,13 @@ class Scribe(ctk.CTk):
 
             return tab_id,text_area
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except IndexError as e:
-            print(":/ Invalid Index")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Add Status_Bar
@@ -128,17 +129,18 @@ class Scribe(ctk.CTk):
         try:
             self.status_bar = ctk.CTkFrame(self, bg_color="#2e2e2e", fg_color = "#2e2e2e", height = 25)
             self.status_bar.pack(side="bottom", fill="x")
-            self.status_bar.grid_columnconfigure((0, 1, 2, 3, 4), weight=1) # Configure "Status_Bar" to have 5 Columns with Equal Weight
 
+            self.status_bar.grid_columnconfigure(0, weight=3, minsize=200) # Configure "Status_Bar" to have the First Column [0] with "Weight" of "3" and atleast "Minimum_Size" of "200px"
+            self.status_bar.grid_columnconfigure((1, 2, 3, 4), weight=1, minsize=125) # Configure "Status_Bar" to have  the other 4 Columns[1 - 4] with Equal "Weight" of "1" and atleast "Minimum_Size" of "125px"
 
-            self.op_status = ctk.CTkLabel(self.status_bar, text="Scribe", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10)
-            self.char_count = ctk.CTkLabel(self.status_bar, text="Characters: 0", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10)
+            self.op_status = ctk.CTkLabel(self.status_bar, text="Scribe", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10, text_color = "#ffc300")
+            self.char_count = ctk.CTkLabel(self.status_bar, text="Characters: 0", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10, text_color = "#bdbdbd")
             separator_1 = self.separator_v(self.status_bar)
-            self.zoom_status= ctk.CTkLabel(self.status_bar, text="Zoom: 100%", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10)
+            self.zoom_status= ctk.CTkLabel(self.status_bar, text="Zoom: 100%", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
             separator_2 = self.separator_v(self.status_bar)
-            self.word_wrap_status = ctk.CTkLabel(self.status_bar, text="Word Wrap: On", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10)
+            self.word_wrap_status = ctk.CTkLabel(self.status_bar, text="Word Wrap: On", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
             separator_3 = self.separator_v(self.status_bar)
-            self.font_status = ctk.CTkLabel(self.status_bar, text="Font: Default", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10)
+            self.font_status = ctk.CTkLabel(self.status_bar, text="Font: Comic Sans MS", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10,text_color = "#bdbdbd")
             separator_4 = self.separator_v(self.status_bar)
 
             self.op_status.grid(row=0, column=0, sticky="w")
@@ -151,7 +153,7 @@ class Scribe(ctk.CTk):
             self.font_status.grid(row=0, column=4, sticky="w")
             separator_4.grid(row=0, column=4, sticky="w")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Close Existing Tabs
@@ -172,13 +174,13 @@ class Scribe(ctk.CTk):
                 if current_tab_index != 0:
                     self.notebook.select(self.notebook.tabs()[current_tab_index - 1]) # Selects the Tab at the [Current_Tab's_Index - 1] if [Current_Tab's_Index != 0], after removing the Current_Tab
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except IndexError as e:
-            print(":/ Invalid Index")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Check for Unsaved_Changes
@@ -193,13 +195,13 @@ class Scribe(ctk.CTk):
             else :
                 return False
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except KeyError as e:
-            print(":/ Key-Value Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
 
@@ -222,10 +224,10 @@ class Scribe(ctk.CTk):
                     self.zoom_menu.place_forget() #Hide Zoom_Menu
                 self.display_file_menu() #Show File_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     def display_file_menu(self):
@@ -250,10 +252,10 @@ class Scribe(ctk.CTk):
 
             self.file_menu.place(x=2, y=22) #Show File_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Edit_Menu
@@ -272,10 +274,10 @@ class Scribe(ctk.CTk):
                     self.zoom_menu.place_forget() #Hide Zoom_Menu
                 self.display_edit_menu() #Show Edit_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     def display_edit_menu(self):
@@ -293,7 +295,7 @@ class Scribe(ctk.CTk):
                 find_previous = ctk.CTkButton(self.edit_menu, text="Find Previous", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 find_next = ctk.CTkButton(self.edit_menu, text="Find Next", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 separator_3 = self.separator_h(self.edit_menu)
-                font = ctk.CTkButton(self.edit_menu, text="Font", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+                font = ctk.CTkButton(self.edit_menu, text="Font", command = self.font_menu_slider, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
           
 
                 undo.pack(pady=0, padx=5)
@@ -312,10 +314,10 @@ class Scribe(ctk.CTk):
 
             self.edit_menu.place(x=55, y=22) #Show Edit_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # View_Menu
@@ -336,10 +338,10 @@ class Scribe(ctk.CTk):
                     self.zoom_menu.place_forget() #Hide Zoom_Menu
                 self.display_view_menu() #Show View_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     def display_view_menu(self):
@@ -358,10 +360,10 @@ class Scribe(ctk.CTk):
 
             self.view_menu.place(x = 95, y = 22) #Show View_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
 
@@ -374,7 +376,7 @@ class Scribe(ctk.CTk):
             separator = ctk.CTkFrame(x, fg_color="#ffc300", height = 2, width = 90)
             return separator
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     def separator_v(self,x): # Separator_Vertical
@@ -382,7 +384,7 @@ class Scribe(ctk.CTk):
             separator = ctk.CTkFrame(x, fg_color="#5c5c5c", height = 15, width = 2)
             return separator
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Get 'current_tab' Name
@@ -390,7 +392,7 @@ class Scribe(ctk.CTk):
         try:
             return self.notebook.nametowidget(self.notebook.select()) # Returns the 'Internal_Tkinter_Widget_Name' for the 'current_tab' Frame. 
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Get 'current_tab' Text_Content
@@ -399,7 +401,7 @@ class Scribe(ctk.CTk):
             current_tab = self.current_tab_name()
             return current_tab.winfo_children()[0] # Gets Content from a Tab's 'ctk.CTkTextbox' widget. 'winfo_children[0]' means that the 'CTkTextbox' is the First Child in a Tab's Frame.
         except Exception as e:
-            print(f":/ Unexpected Error Occured") 
+            self.op_status.configure(text=": /") 
             print(f"{e}")
 
     #---------------------------------------------------------------------- File_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -409,7 +411,7 @@ class Scribe(ctk.CTk):
             self.add_new_tab()
             self.title("Scribe")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Open
@@ -435,13 +437,13 @@ class Scribe(ctk.CTk):
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
                 except IOError as e:
-                    print(":/ File Not Readable")
+                    self.op_status.configure(text=": / File Not Readable")
                     print(f"{e}")
         except FileNotFoundError as e:
-            print(":/ File Not Found")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     # Save
@@ -468,16 +470,16 @@ class Scribe(ctk.CTk):
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
                 except IOError as e:
-                    print(":/ File Not Editable")
+                    self.op_status.configure(text=": / File Not Editable")
                     print(f"{e}")
             else:
                 # If no path exists, prompt for 'Save As'
                 self.save_as_scribe()
         except AttributeError as e:
-            print(":/ Attribute Error :: Error Accessing Current Tab or Text Widget")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     # Save As
@@ -503,13 +505,13 @@ class Scribe(ctk.CTk):
                     self.notebook.tab(current_tab, text = file_name) # Set the value of 'text' attribute to 'file_name'
                     self.title(file_name) # Update window Title with 'file_name'.
                 except IOError as e:
-                    print(":/ File Not Editable")
+                    self.op_status.configure(text=": / File Not Editable")
                     print(f"{e}")
         except AttributeError as e:
-            print(":/ Attribute Error :: Error Accessing Current Tab or Text Widget")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     #---------------------------------------------------------------------- Edit_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -521,10 +523,10 @@ class Scribe(ctk.CTk):
             if text:
                 text.edit_undo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Widget Method to Undo Changes
         except tkinter.TclError as e:
-            print(":/ No Changes to Undo") 
+            self.op_status.configure(text=": / No Changes to Undo") 
             print(f"{e}")      
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         
     
@@ -536,10 +538,10 @@ class Scribe(ctk.CTk):
             if text:
                 text.edit_redo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Method to Redo Changes
         except tkinter.TclError as e:
-            print(":/ No Changes to Redo")
+            self.op_status.configure(text=": / No Changes to Redo")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Cut
@@ -556,7 +558,7 @@ class Scribe(ctk.CTk):
 
             # Delete the "Selected_Text" from the "Text_Area" [Implementing "Cut"]
             current_tab.text_widget.delete("sel.first", "sel.last")
-        except Exception:
+        except Exception as e:
             messagebox.showwarning("Null_Selection Error!", "Please select some text to 'Cut'.")
 
     # Copy
@@ -570,7 +572,7 @@ class Scribe(ctk.CTk):
             # Save "Selected_Text" to the "Clipboard"
             self.clipboard_clear()
             self.clipboard_append(selected_text)
-        except Exception:
+        except Exception as e:
             messagebox.showwarning("Null_Selection Error!", "Please select some text to 'Copy'.")
     
     # Paste
@@ -581,8 +583,16 @@ class Scribe(ctk.CTk):
 
             # Paste the "Clipboard_Text" into the "Text_Area"
             current_tab.text_widget.insert("insert", clipboard_text)
-        except Exception:
+        except Exception as e:
             messagebox.showwarning("Clipboard Error!", "Empty Clipboard. Nothing to Paste.")
+    
+    # Set Default Font_Family
+    font_family = "Comic Sans MS"
+
+    # Font_Menu
+    def font_menu_slider(self):
+        if hasattr(self,"op_status"):
+            self.op_status.configure(text="File Saved . . . ")
 
     #---------------------------------------------------------------------- View_Menu Operations -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
     # Zoom Menu
@@ -599,10 +609,10 @@ class Scribe(ctk.CTk):
                      self.edit_menu.place_forget() #Hide View_Menu
                 self.display_zoom_menu() #Show Edit_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     def display_zoom_menu(self):
@@ -619,16 +629,15 @@ class Scribe(ctk.CTk):
                 separator.pack(pady=0, padx=5)
                 reset.pack(pady=0, padx=5)
 
-            self.zoom_menu.place(x=155, y=22) #Show File_Menu
+            self.zoom_menu.place(x=205, y=22) #Show File_Menu
         except AttributeError as e:
-            print(":/ Attribute Error")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
-    # Set Font_Family and Font_Size
-    font_family = "Comic Sans MS"
+    # Set Default Font_Size
     font_size = 12
 
     def zoom_in(self):
@@ -640,10 +649,10 @@ class Scribe(ctk.CTk):
                 if hasattr(self, 'zoom_status'):
                     self.zoom_status.configure(text=f"Zoom: {round((self.font_size / 12) * 100)}%")
         except AttributeError as e:
-            print(":/ Attribute Error :: Error accessing font_size or zoom_status.")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     def zoom_out(self):
@@ -655,10 +664,10 @@ class Scribe(ctk.CTk):
                 if hasattr(self, 'zoom_status'):
                     self.zoom_status.configure(text=f"Zoom: {round((self.font_size / 12) * 100)}%")
         except AttributeError as e:
-            print(":/ Attribute Error :: Error accessing font_size or zoom_status.")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     def zoom_reset(self):
@@ -669,10 +678,10 @@ class Scribe(ctk.CTk):
             if hasattr(self, 'zoom_status'):
                     self.zoom_status.configure(text=f"Zoom: 100%")
         except AttributeError as e:
-            print(":/ Attribute Error :: Error accessing font_size or zoom_status.")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Update Font
@@ -684,10 +693,10 @@ class Scribe(ctk.CTk):
             # Configure "Text_Area" Attributes for "Font_Style"
             text_area.configure(font=(self.font_family, self.font_size))
         except AttributeError as e:
-            print(":/ Attribute Error :: Error accessing text_area, font_family or font_size.")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     # Word_Wrap
@@ -695,9 +704,9 @@ class Scribe(ctk.CTk):
 
     def toggle_word_wrap_text(self): # Toggle "Word_Wrap" Button "Text"
         try:
-            return "Word Wrap ❎" if not self.word_wrap_enabled else "Word Wrap ✅ "
+            return "Word Wrap ✖" if not self.word_wrap_enabled else "Word Wrap ✔ "
         except Exception:
-            return "Word Wrap ❎"
+            return "Word Wrap ✔"
      
     def toggle_word_wrap(self): # Toggle "Word_Wrap_State"
         try:
@@ -705,7 +714,13 @@ class Scribe(ctk.CTk):
          
             current_tab = self.current_tab_name()
             text_area = getattr(current_tab, 'text_widget', None)
-            text_area.configure(wrap="word" if self.word_wrap_enabled else "none") # Configure the "Current_Tab's Text_Widget" to enable or disable "Word_Wrap"
+
+            if self.word_wrap_enabled: # Configure the "Current_Tab's Text_Widget" to enable or disable "Word_Wrap"
+                text_area.configure(wrap="word")
+                self.op_status.configure(text=" ✔  Word Wrap enabled ")
+            else:
+                text_area.configure(wrap="none")
+                self.op_status.configure(text="❗ Word Wrap disabled ")
 
             if self.view_menu:
                 for widget in self.view_menu.winfo_children():
@@ -716,10 +731,10 @@ class Scribe(ctk.CTk):
                 word_wrap_status_text = "Word Wrap: On" if self.word_wrap_enabled else "Word Wrap: ❗"
                 self.word_wrap_status.configure(text = word_wrap_status_text)  # Update status bar label
         except AttributeError as e:
-            print(":/ Attribute Error :: Error Accessing Current Tab or Text Widget")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Status_Bar
@@ -727,25 +742,30 @@ class Scribe(ctk.CTk):
 
     def toggle_status_bar_text(self): # Toggle "Status_Bar" Button "Text"
         try:
-            return "Status Bar  ❎" if not self.status_bar_enabled else "Status Bar  ✅ "
+            return "Status Bar  ✖" if not self.status_bar_enabled else "Status Bar  ✔ "
         except Exception:
-            return "Status Bar  ❎"
+            return "Status Bar  ✔"
         
     def toggle_status_bar(self):
         try:
             self.status_bar_enabled = not self.status_bar_enabled # Toggles Status_Bar_State
 
-            self.status_bar.pack_forget() if not self.status_bar_enabled else self.status_bar.pack(side="bottom", fill="x") # Hide or Show "Status_Bar" based on "status_bar_enabled" State
+            if not self.status_bar_enabled:
+                self.status_bar.pack_forget() 
+                self.op_status.configure(text="❗ Status Bar disabled ")
+            else:
+                self.status_bar.pack(side="bottom", fill="x") # Hide or Show "Status_Bar" based on "status_bar_enabled" State
+                self.op_status.configure(text=" ✔  Status Bar enabled ")
 
             if self.view_menu:
                 for widget in self.view_menu.winfo_children():
                     if isinstance(widget, ctk.CTkButton) and "Status Bar" in widget.cget("text"):
                         widget.configure(text=self.toggle_status_bar_text()) # Toggle "Status_Bat" Button "Text" in "View_Menu" according to "Status_Bar_State" using "toggle_status_bar__text()" Method on Each "Click"
         except AttributeError as e:
-            print(":/ Attribute Error :: Error Accessing Current Tab or Text Widget")
+            self.op_status.configure(text=": /")
             print(f"{e}")
         except Exception as e:
-            print(f":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
     # Event_Handlers------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -768,10 +788,12 @@ class Scribe(ctk.CTk):
             char_count = len(content)  # Count no. of "Characters" in the "Content"
 
             # Update the Status_Bar "char_count Label"
-            if hasattr(self, 'char_count'):
-                self.char_count.configure(text=f"Characters: {char_count}")
+            self.char_count.configure(text=f"Characters: {char_count}")
+
+            # Update the Status_Bar "op_status Label"
+            self.op_status.configure(text="Scribe")
         except Exception as e:
-            print(":/ Unexpected Error Occured")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     def click_on_textbox(self,event):
@@ -785,7 +807,7 @@ class Scribe(ctk.CTk):
                 if self.zoom_menu and self.zoom_menu.winfo_ismapped():
                     self.zoom_menu.place_forget() 
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
     
     def update_char_count(self,event=None):
@@ -801,7 +823,7 @@ class Scribe(ctk.CTk):
             if hasattr(self, 'char_count'):
                 self.char_count.configure(text=f"Characters: {char_count}")
         except Exception as e:
-            print(":/ Unexpected Error Occurred")
+            self.op_status.configure(text=": /")
             print(f"{e}")
 
 

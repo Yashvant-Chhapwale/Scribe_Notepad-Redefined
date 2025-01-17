@@ -19,7 +19,7 @@ class Scribe(ctk.CTk):
 
         # Display-Window_Settings
         self.geometry("600x350")
-        self.minsize(250,120)
+        self.minsize(350,200)
 
         # Initialize Font_Family and Font_size
         self.font_family = "Comic Sans MS"
@@ -78,8 +78,8 @@ class Scribe(ctk.CTk):
             text_area.pack(expand = True, fill="both")
 
             # Create a "X" button to close the tab
-            close_tab = ctk.CTkButton(frame, text=" X ", font = ('Comic Sans MS', 9, "normal"), corner_radius = 3, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#3b3b3b", hover_color = "#404040", width = 10, height = 35, command = lambda: self.close_tab(frame))
-            close_tab.place(relx=1.0, rely=0.0, anchor="ne", x=-20, y=-3)
+            close_tab = ctk.CTkButton(frame, text=" X ", font = ('Comic Sans MS', 9, "bold"), corner_radius = 3, text_color = "#ffc300", fg_color = "#3b3b3b", bg_color = "#3b3b3b", hover_color = "#404040", width = 10, height = 20, command = lambda: self.close_tab(frame))
+            close_tab.place(relx=1.0, rely=0.0, anchor="ne", x=0, y=0)
 
             # Handles the Event that "Text_Area" is "Clicked"
             text_area.bind("<Button-1>", self.click_on_textbox)
@@ -135,8 +135,10 @@ class Scribe(ctk.CTk):
             self.status_bar = ctk.CTkFrame(self, bg_color="#2e2e2e", fg_color = "#2e2e2e", height = 25)
             self.status_bar.pack(side="bottom", fill="x")
 
-            self.status_bar.grid_columnconfigure(0, weight=3, minsize=200) # Configure "Status_Bar" to have the First Column [0] with "Weight" of "3" and atleast "Minimum_Size" of "200px"
-            self.status_bar.grid_columnconfigure((1, 2, 3, 4), weight=1, minsize=125) # Configure "Status_Bar" to have  the other 4 Columns[1 - 4] with Equal "Weight" of "1" and atleast "Minimum_Size" of "125px"
+            self.status_bar.grid_columnconfigure(0, weight=3, minsize=185) # Configure "Status_Bar" to have the First Column [0] with "Weight" of "3" and atleast "Minimum_Size" of "200px"
+            self.status_bar.grid_columnconfigure(1, weight=1, minsize=150)
+            self.status_bar.grid_columnconfigure(2, weight=1, minsize=110)
+            self.status_bar.grid_columnconfigure((3, 4), weight=1, minsize=125) # Configure "Status_Bar" to have  the other 4 Columns[1 - 4] with Equal "Weight" of "1" and atleast "Minimum_Size" of "125px"
 
             self.op_status = ctk.CTkLabel(self.status_bar, text="Scribe", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10, text_color = "#ffc300")
             self.char_count = ctk.CTkLabel(self.status_bar, text="Characters: 0", bg_color="#2e2e2e", fg_color="#2e2e2e", padx=10, text_color = "#bdbdbd")
@@ -225,8 +227,10 @@ class Scribe(ctk.CTk):
                     self.edit_menu.place_forget() #Hide Edit_Menu
                 if self.view_menu and self.view_menu.winfo_ismapped():
                     self.view_menu.place_forget() #Hide View_Menu
-                if self.zoom_menu and self.zoom_menu.winfo_ismapped():
-                    self.zoom_menu.place_forget() #Hide Zoom_Menu
+                    if self.zoom_menu and self.zoom_menu.winfo_ismapped():
+                        self.zoom_menu.place_forget() #Hide Zoom_Menu
+                if self.find_widget and self.find_widget.winfo_ismapped():
+                    self.find_widget.place_forget() #Hide Find_Widget
                 self.display_file_menu() #Show File_Menu
         except AttributeError as e:
             self.op_status.configure(text=": /")
@@ -274,9 +278,9 @@ class Scribe(ctk.CTk):
                 if self.file_menu and self.file_menu.winfo_ismapped():
                     self.file_menu.place_forget() #Hide File_Menu
                 if self.view_menu and self.view_menu.winfo_ismapped():
-                     self.view_menu.place_forget() #Hide View_Menu
-                if self.zoom_menu and self.zoom_menu.winfo_ismapped():
-                    self.zoom_menu.place_forget() #Hide Zoom_Menu
+                    self.view_menu.place_forget() #Hide View_Menu
+                    if self.zoom_menu and self.zoom_menu.winfo_ismapped():
+                        self.zoom_menu.place_forget() #Hide Zoom_Menu
                 self.display_edit_menu() #Show Edit_Menu
         except AttributeError as e:
             self.op_status.configure(text=": /")
@@ -296,9 +300,7 @@ class Scribe(ctk.CTk):
                 copy = ctk.CTkButton(self.edit_menu, text="Copy", command = self.copy_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 paste = ctk.CTkButton(self.edit_menu, text="Paste", command = self.paste_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 separator_2 = self.separator_h(self.edit_menu)
-                find = ctk.CTkButton(self.edit_menu, text="Find", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-                find_previous = ctk.CTkButton(self.edit_menu, text="Find Previous", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
-                find_next = ctk.CTkButton(self.edit_menu, text="Find Next", command = self.new_scribe, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
+                find = ctk.CTkButton(self.edit_menu, text="Find", command = self.toggle_find_widget, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
                 separator_3 = self.separator_h(self.edit_menu)
                 font = ctk.CTkButton(self.edit_menu, text="Font", command = self.font_menu_slider, fg_color = "#1c1c1c", hover_color = "#333333", width = 100, anchor="w")
           
@@ -312,8 +314,6 @@ class Scribe(ctk.CTk):
                 paste.pack(pady=0, padx=2)
                 separator_2.pack(pady=0, padx=2)
                 find.pack(pady=0, padx=2)
-                find_previous.pack(pady=0, padx=2)
-                find_next.pack(pady=0, padx=2)
                 separator_3.pack(pady=0, padx=2)
                 font.pack(pady=0, padx=2)
 
@@ -339,8 +339,8 @@ class Scribe(ctk.CTk):
                     self.file_menu.place_forget() #Hide File_Menu
                 if self.edit_menu and self.edit_menu.winfo_ismapped():
                     self.edit_menu.place_forget() #Hide Edit_Menu
-                if self.zoom_menu and self.zoom_menu.winfo_ismapped():
-                    self.zoom_menu.place_forget() #Hide Zoom_Menu
+                if self.find_widget and self.find_widget.winfo_ismapped():
+                    self.find_widget.place_forget() #Hide Find_Widget
                 self.display_view_menu() #Show View_Menu
         except AttributeError as e:
             self.op_status.configure(text=": /")
@@ -534,7 +534,7 @@ class Scribe(ctk.CTk):
                     self.title(file_name) # Update window Title with 'file_name'.
 
                     if hasattr(self, 'op_status'):
-                        self.op_status.configure(text=f"File Saved as : : {file_name}")
+                        self.op_status.configure(text=f"File Saved as : {file_name}")
                 except IOError as e:
                     self.op_status.configure(text=": / File Not Editable")
                     print(f"{e}")
@@ -557,6 +557,8 @@ class Scribe(ctk.CTk):
                 text.edit_undo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Widget Method to Undo Changes
                 if hasattr(self, 'op_status'):
                         self.op_status.configure(text=f"Scribe")
+            
+            self.update_char_count()
         except tkinter.TclError as e:
             self.op_status.configure(text=": / No Changes to Undo") 
             print(f"{e}")      
@@ -574,6 +576,8 @@ class Scribe(ctk.CTk):
                 text.edit_redo() # Inbuilt "Tkinter 'Text' Widget"/"Custom Tkinter 'CTkTextbox'" Method to Redo Changes
                 if hasattr(self, 'op_status'):
                         self.op_status.configure(text=f"Scribe")
+
+            self.update_char_count()
         except tkinter.TclError as e:
             self.op_status.configure(text=": / No Changes to Redo")
             print(f"{e}")
@@ -620,9 +624,212 @@ class Scribe(ctk.CTk):
 
             # Paste the "Clipboard_Text" into the "Text_Area"
             current_tab.text_widget.insert("insert", clipboard_text)
+
+            self.update_char_count()
         except Exception as e:
             messagebox.showwarning("Clipboard Error!", "Empty Clipboard. Nothing to Paste.")
 
+    # Find
+    find_widget = None
+
+    def toggle_find_widget(self):
+        try:
+            if self.find_widget and self.find_widget.winfo_ismapped():
+                self.find_widget.place_forget() #Hide Find_Widget
+
+                text_area = self.current_tab_text()
+                text_area.tag_remove("highlight", "1.0", "end") #Remove Highlights
+            else:
+                if self.file_menu and self.file_menu.winfo_ismapped():
+                    self.file_menu.place_forget() #Hide File_Menu
+                if self.edit_menu and self.edit_menu.winfo_ismapped():
+                    self.edit_menu.place_forget() #Hide Edit_Menu
+                if self.view_menu and self.view_menu.winfo_ismapped():
+                    self.view_menu.place_forget() #Hide View_Menu
+                    if self.zoom_menu and self.zoom_menu.winfo_ismapped():
+                        self.zoom_menu.place_forget() #Hide Zoom_Menu
+                self.display_find_widget() #Show Find_widget
+        except AttributeError as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    def display_find_widget(self):
+        try:
+            if not self.find_widget:
+                self.find_widget = ctk.CTkFrame(self, fg_color="#1c1c1c", bg_color="#1c1c1c", width=350, height=50, corner_radius=6)
+                self.find_widget.grid_columnconfigure((0,1), weight=1)
+
+                label = ctk.CTkLabel(self.find_widget, text="Find :")
+                self.find_search_entry = ctk.CTkEntry(self.find_widget, corner_radius=4, width=150, height=20, border_color="#575757", border_width=1, font = (self.font_family,self.font_size,"bold"))
+                button_frame = ctk.CTkFrame(self.find_widget, fg_color="#1c1c1c")
+                button_frame.grid_columnconfigure((0,1,2,3), weight=1)
+           
+                find_previous = ctk.CTkButton(button_frame, text="◀", command=self.find_previous_in_scribe, fg_color="#1c1c1c", bg_color="#1c1c1c", hover_color="#3b3b3b", text_color = "#ffc300", corner_radius=3, width=25, height=10)
+                find = ctk.CTkButton(button_frame, text="🔍", command=self.find_in_scribe, fg_color="#1c1c1c", bg_color="#1c1c1c", hover_color="#3b3b3b", text_color = "#ffffff", corner_radius=3, width=25, height=10)
+                find_next = ctk.CTkButton(button_frame, text="▶", command=self.find_next_in_scribe, fg_color="#1c1c1c", bg_color="#1c1c1c", hover_color="#3b3b3b", text_color = "#ffc300", corner_radius=3, width=25, height=10)
+                find_all = ctk.CTkButton(button_frame, text="All", command=self.find_all_in_scribe, fg_color="#1c1c1c", bg_color="#1c1c1c", hover_color="#3b3b3b", text_color = "#ffc300", corner_radius=3, width=40, height=10)
+                
+                label.grid(row=0, column=0, padx=5)
+                self.find_search_entry.grid(row=0, column=1, padx=10, pady=2)
+                self.find_search_entry.bind("<FocusIn>", self.find_search_entry_focusIn)
+                self.find_search_entry.bind("<FocusOut>", self.find_search_entry_focusOut)
+                button_frame.grid(row=1, column=1)
+                
+                find_previous.grid(row=0, column=0, padx=0)
+                find.grid(row=0, column=1, padx=2)
+                find_next.grid(row=0, column=2, padx=2)
+                find_all.grid(row=0, column=3, padx=0)
+            self.set_find_widget_position()
+            self.bind("<Configure>", self.set_find_widget_position)
+        except AttributeError as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    search_word = None # Initialize "self.search_word" Value to be "None"
+
+    # 🔍
+    def find_in_scribe(self):
+        try:
+            self.find_search_entry_focusOut()
+            self.op_status.configure(text="Scribe")
+
+            self.search_word = self.find_search_entry.get()
+            if not self.search_word:
+                messagebox.showerror("Empty Find Input", "Please enter a word to search.")
+            else:
+                self.search_indices = [] # Reset "self.search_indices" i.e "List of Search_Matches", to [] / (None) 
+                self.search_match_index = -1 # Reset "search_match_index" Pointer to '-1'
+
+                current_tab = self.current_tab_name()
+                text_content = current_tab.text_widget.get("1.0","end-1c")
+           
+                start_index=0 # Initialize Start Index to '0'
+                while True:
+                    start_index = text_content.find(self.search_word, start_index) # The 'find()' Method Returns the Index (0,1,2, . . . ) of the First Occurrence of the Specified Substring(self.search_word). Returns "-1" if the Substring is Not Found.
+                    if start_index == -1:
+                        break #Exits Loop if "No Further Matches Found"
+
+                    line, col = self.index_to_linexcol(start_index) # Map "start_index"(Occurences of "self.search_word") to 'line' and 'col' Coordinates
+                    self.search_indices.append((line, col)) # Add [line][col] to "self.search_indices" List
+                    start_index += len(self.search_word) # Suppose self.search_word = "hello", start_index = 0 (where "hello" occurs), then "start_index" becomes :: start_index = 0 + len(self.search_word) = 0 + 5 = 5 i.e, the "start_index" navigates ahead of the current "self.search_word" Occurence. 
+            
+                if not self.search_indices:
+                    self.op_status.configure(text="❗ No Matches Found")
+                else:
+                    self.search_match_index = 0 # Initialize "self.search_match_index" to '0' to target "self.search_indices[0]" i.e First_Occurence of "self.search_word"
+                    self.highlight_match()
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    # ▶
+    def find_next_in_scribe(self):
+        try:
+            self.find_search_entry_focusOut()
+            self.op_status.configure(text="Scribe")
+
+            if not self.search_indices:
+                self.op_status.configure(text="❗ No Matches Found")
+            else:
+                self.search_match_index = (self.search_match_index + 1) % len(self.search_indices) # It updates "self.search_match_index" to point to the Next_Match in "self.search_indices". When it reaches the Last_Index in "self.search_indices", it wraps around to the First_Index (using modulo '%' operator)).
+                                                                                                   # Ex: Suppose "len(self.search_indices) = 2" and "self.search_match_index = 2 [Indicates_Last_Index]" then operation becomes :: (2+1) % 2 = 3 % 2 = 1[First_Index]
+                self.highlight_match()
+        except AttributeError as e:
+            self.op_status.configure(text='Initiate "🔍 Find" to utilize this feature.') 
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    # ◀
+    def find_previous_in_scribe(self):
+        try:
+            self.find_search_entry_focusOut()
+            self.op_status.configure(text="Scribe")
+
+            if not self.search_indices:
+                self.op_status.configure(text="❗ No Matches Found")
+            else:
+                self.search_match_index = (self.search_match_index - 1) % len(self.search_indices)# It updates "self.search_match_index" to point to the Previous_Match in "self.search_indices". When it reaches the First_Index in "self.search_indices", it wraps around to the Last_Index (using modulo '%' operator)).
+                                                                                                   # Ex: Suppose "len(self.search_indices) = 2" and "self.search_match_index = 1 [Indicates_First_Index]" then operation becomes :: (1-1) % 2 = 0 % 2 = 2[Last_Index]
+                self.highlight_match()
+        except AttributeError as e:
+            self.op_status.configure(text='Initiate "🔍 Find" to utilize this feature.') 
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    # All
+    def find_all_in_scribe(self):
+        try:
+            self.find_in_scribe() # Find all instances of "self.search_word"
+
+            if not self.search_indices:
+                self.op_status.configure(text=f'Found 0 occurrences of "{self.search_word}".')
+            else:
+                text_area = self.current_tab_text()
+
+                text_area.tag_remove("highlight", "1.0", "end")  # Remove Existing Highlights
+
+                # Highlight all Matches stored in "self.search_indices"
+                for line, col in self.search_indices:
+                    start = f"{line}.{col}"
+                    end = f"{line}.{col + len(self.search_word)}"                    
+                    text_area.tag_add("highlight", start, end)
+
+                text_area.tag_config("highlight", background="#ffc300", foreground="#000000")
+
+                text_area.see(f"{self.search_indices[0][0]}.{self.search_indices[0][1]}") # "self.search_indices[0]" refers to the First Tuple in the "self.search_indices" List | Formats the "Line(self.search_indices[0][0])" and "Column(self.search_indices[0][1])" into a string in the format "line.column", which is required by the 'see()' Method
+                                                                                          # The "see()" Method of a "Text_Widget" in Tkinter is used to Scroll the Widget's View, so that the specified index is visible to the User.
+                self.op_status.configure(text=f'Found {len(self.search_indices)} occurrences of "{self.search_word}".')
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+
+    def index_to_linexcol(self, index):
+        try:
+            current_tab = self.current_tab_name()
+            text_content = current_tab.text_widget.get("1.0", "end-1c")
+
+            lines = text_content.splitlines() # Split Content into 'Individual Lines'
+
+            running_length = 0  # Initialize "running_length" to '0' i.e, '0 Characters processed'.
+                                # The "running_length" keeps track of the Total Number of "Characters" processed up till the "Current_line", including Newline Characters.
+            for i, line in enumerate(lines): # i = Line_Index, line = Line_Text
+                if index < running_length + len(line): # Checks if word(index) lies in the "Current_line"
+                    return i + 1, index - running_length # Returns "line_coordinates" as "i+1" (Shifts Line Indexing to start from '1' instead of '0')
+                                                         # Returns "col_coordinates" as "index - running length". Suppose "index=30", and each "line" has upto "20 characters only" i.e, len(line) = 20, hence word lies in 2nd line as :: 30(index) > 20(0[initial running_length] + 20[len(line)]), therefore (update) running_length = 20 + 1(newline character) = 21, so "col_coordinate" = 30 - 21 = 9, hence word lies in "line" = i + 1 = 1 + 1 = 2 [2nd Line is indicated by "i = 1" in "splitlines()" Method] and "col"  = 9 [calculated in "col_coordinate"]
+                running_length += len(line) + 1  # If word(index) is not found in "Current_line" i.e "index" exceeds "running_length + len(line)", then Update "running_length" by adding number_of_characters_parsed_in_Current_line i.e, running_length + len(line) + 1 (Includes Newline Character)
+
+            return 1, 0  # Return Default Value "1.0" where Line="1",Column="0" i.e "Start" of the Text
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+    def highlight_match(self): 
+        try:
+            text_area = self.current_tab_text()
+            text_area.tag_remove("highlight", "1.0", "end")  # Remove Existing Highlights using 'tag_remove()'
+
+            if self.search_match_index > -1:
+                line, col = self.search_indices[self.search_match_index] 
+
+                start = f"{line}.{col}" # start="line_Number_Where_Search_Word_Is_Detected . column_Number_For_Line_Where_The_Word_Starts "
+                end = f"{line}.{col + len(self.search_word)}" # end="line_Number_Where_Search_Word_Is_Detected . (column_Number_For_Line_Where_The_Word_Starts + len(self.search_word))"
+
+                text_area.tag_add("highlight", start, end) # Add Highlight using 'tag_add'
+                text_area.tag_config("highlight", background="#ffc300", foreground="#000000") # Configure Tag_Attributes (background, foreground) using 'tag_config'
+                text_area.see(end) # The "see()" Method of a "Text_Widget" in Tkinter is used to Scroll the Widget's View, so that the specified index is visible to the User.
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+    
     # Font_Menu
     def font_menu_slider(self):
         if hasattr(self,"op_status"):
@@ -637,13 +844,13 @@ class Scribe(ctk.CTk):
     def toggle_zoom_menu(self):
         try:
             if self.zoom_menu and self.zoom_menu.winfo_ismapped():
-                self.zoom_menu.place_forget() #Hide Edit_Menu
+                self.zoom_menu.place_forget() #Hide Zoom_Menu
             else:
                 if self.file_menu and self.file_menu.winfo_ismapped():
                     self.file_menu.place_forget() #Hide File_Menu
                 if self.edit_menu and self.edit_menu.winfo_ismapped():
-                     self.edit_menu.place_forget() #Hide View_Menu
-                self.display_zoom_menu() #Show Edit_Menu
+                    self.edit_menu.place_forget() #Hide Edit_Menu
+                self.display_zoom_menu() #Show Zoom_Menu   
         except AttributeError as e:
             self.op_status.configure(text=": /")
             print(f"{e}")
@@ -768,10 +975,10 @@ class Scribe(ctk.CTk):
         try:
             self.status_bar_enabled = not self.status_bar_enabled # Toggles Status_Bar_State
 
-            if not self.status_bar_enabled:
+            if not self.status_bar_enabled: # If self.status_bar_enabled != True
                 self.status_bar.pack_forget() 
                 self.op_status.configure(text="❗ Status Bar disabled ")
-            else:
+            else: # If self.status_bar_enabled == True
                 self.status_bar.pack(side="bottom", fill="x") # Hide or Show "Status_Bar" based on "status_bar_enabled" State
                 self.op_status.configure(text=" ✔  Status Bar enabled ")
 
@@ -847,6 +1054,30 @@ class Scribe(ctk.CTk):
             self.op_status.configure(text=": /")
             print(f"{e}")
 
+    def set_find_widget_position(self,event=None):
+        try:
+            if self.find_widget:
+                window_width = self.winfo_width()
+                balance_offset = 180
+                self.find_widget.place(x=(window_width/2)+balance_offset, y=0, anchor="ne")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+    
+    def find_search_entry_focusIn(self,event=None):
+        try:
+            self.find_search_entry.configure(border_color="#ffb700")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
+
+
+    def find_search_entry_focusOut(self,event=None):
+        try:
+            self.find_search_entry.configure(border_color="#575757")
+        except Exception as e:
+            self.op_status.configure(text=": /")
+            print(f"{e}")
 
 
 app = Scribe()
